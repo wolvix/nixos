@@ -4,22 +4,11 @@
 
 { config, lib, pkgs, ... }:
 
-let
-  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz";
-in
-
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      (import "${home-manager}/nixos")
+      /etc/nixos/hardware-configuration.nix
     ];
-
-  home-manager.useUserPackages = true;
-  home-manager.useGlobalPkgs = true;
-  home-manager.backupFileExtension = "backup";
-  home-manager.users.wolven = import ./home.nix;
-
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -49,10 +38,10 @@ in
   # };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  # services.xserver.enable = true;
 
   # Configure keymap in X11
-  services.xserver.xkb.layout = "no";
+  # services.xserver.xkb.layout = "no";
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
 
   # Enable CUPS to print documents.
@@ -92,6 +81,21 @@ in
   # Programs
   programs.firefox.enable = true;
   programs.chromium.enable = true;
+  
+  # Thunar
+  programs.thunar.enable = true;
+  programs.xfconf.enable = true;
+  
+  programs.thunar.plugins = with pkgs.xfce; [
+  thunar-archive-plugin
+  thunar-volman
+  ];
+
+  services.gvfs.enable = true; # Mount, trash, and other functionalities
+  services.tumbler.enable = true; # Thumbnail support for images
+
+  # MangoWC
+  # programs.mangowc.enable = true;
 
   ######################
   ### Hyprland START ###
@@ -102,7 +106,7 @@ in
     #nvidiaPatches = true; # ONLY use this line if you have an nvidia card  
   };
 
-  environment.sessionVariables.NIXOS_OZONE_WL = "1"; # This variable fixes electron apps in wayland
+  #environment.sessionVariables.NIXOS_OZONE_WL = "1"; # This variable fixes electron apps in wayland
   ####################
   ### Hyprland END ###
   ####################
@@ -114,10 +118,16 @@ in
     neovim 			# Vim text editor fork focused on extensibility and agility
     wget			# Tool for retrieving files using HTTP, HTTPS, and FTP
     yazi 			# Blazing fast terminal file manager written in Rust, based on async I/O
+    zip 			# Compressor/archiver for creating and modifying zipfiles
+    unzip 			# raction utility for archives compressed in .zip format
     kitty 			# The fast, feature-rich, GPU based terminal emulator
+    starship 			# Minimal, blazing fast, and extremely customizable prompt for any shell
+    btop 			# Monitor of resources
     foot 			# Fast, lightweight and minimalistic Wayland terminal emulator
     waybar 			# Highly customizable Wayland bar for Sway and Wlroots based compositors
     hyprpaper 			# Blazing fast wayland wallpaper utility
+    hyprlock 			# Hyprland's GPU-accelerated screen locking utility
+    fuzzel 			# Wayland-native application launcher, similar to rofi’s drun mode
     wofi 			# Launcher/menu program for wlroots based wayland compositors such as sway
     pavucontrol 		# PulseAudio Volume Control
     ncpamixer 			# Terminal mixer for PulseAudio inspired by pavucontrol
@@ -129,6 +139,7 @@ in
     adwaita-icon-theme 		# Private UI icon set for GNOME core apps.
     adwaita-icon-theme-legacy 	# Fullcolor icon theme providing fallback for legacy apps
     mpv 			# General-purpose media player
+    celluloid 			# Simple GTK frontend for the mpv video player
     deluge-gtk 			# Torrent client
     material-black-colors 	# Material Black Colors icons
     rose-pine-hyprcursor 	# Rose Pine theme for Hyprcursor
@@ -136,6 +147,15 @@ in
     chromium 			# Open source web browser from Google
     widevine-cdm 		# Widevine CDM
     vscode 			# Code editor developed by Microsoft
+    winbox4 			# Graphical configuration utility for RouterOS-based devices
+    remmina 			# Remote desktop client written in GTK
+    inkscape 			# Vector graphics editor
+    caligula 			# User-friendly, lightweight TUI for disk imaging
+    ghostty
+    tealdeer
+    xclip
+    bat
+
   ];
 
   # Install fonts
@@ -143,6 +163,9 @@ in
     pkgs.nerd-fonts.jetbrains-mono
     pkgs.font-awesome
   ];
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -158,8 +181,8 @@ in
   services.openssh.enable = true;
 
   # Enable SDDM Display Mananger
-  services.displayManager.sddm.enable = true; #This line enables sddm
-  services.displayManager.sddm.wayland.enable = true;
+  #services.displayManager.sddm.enable = true; #This line enables sddm
+  #services.displayManager.sddm.wayland.enable = true;
 
 
 
